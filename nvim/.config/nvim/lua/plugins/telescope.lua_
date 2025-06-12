@@ -1,0 +1,154 @@
+return {
+    {
+        'nvim-telescope/telescope.nvim',
+        cmd = 'Telescope',
+        branch = '0.1.x',
+        enabled = false,
+        dependencies = {
+            'nvim-lua/plenary.nvim',
+            'nvim-tree/nvim-web-devicons',
+            'folke/trouble.nvim',
+            {
+                'nvim-telescope/telescope-fzf-native.nvim',
+                build = 'cmake -S. -Bbuild -DCMAKE_BUILD_TYPE=Release && cmake --build build --config Release && cmake --install build --prefix build',
+            },
+        },
+        config = function()
+            local keymap = vim.keymap
+            local telescope = require('telescope')
+            local actions = require('telescope.actions')
+            local builtin = require('telescope.builtin')
+
+            local trouble = require('trouble.sources.telescope')
+
+            telescope.setup({
+                defaults = {
+                    mappings = {
+                        i = {
+                            ['<Esc>'] = actions.close,
+                            ['<C-t>'] = trouble.open,
+                        },
+                        n = { ['<C-t>'] = trouble.open },
+                    },
+                    sorting_strategy = 'ascending',
+                    file_ignore_patterns = {
+                        'node_modules/',
+                        '.git',
+                        'build/',
+                        'dist/',
+                        '.DS_Store/',
+                        '.cache/',
+                        'undodir/',
+                        '.env',
+                        '.venv',
+                    },
+                    dynamic_preview_title = true,
+                    path_display = { 'smart' },
+                },
+                pickers = {
+                    find_files = {
+                        find_command = {
+                            'fd',
+                            '--type',
+                            'f',
+                            '--strip-cwd-prefix',
+                            '--hidden',
+                        },
+                    },
+                    vimgrep_arguments = {
+                        'rg',
+                        '--color=never',
+                        '--no-heading',
+                        '--with-filename',
+                        '--line-number',
+                        '--column',
+                        '--smart-case',
+                        '--trim',
+                        '--hidden',
+                    },
+                    lsp_references = {
+                        fname_width = 100,
+                        show_line = false,
+                        include_declaration = false,
+                    },
+                    current_buffer_fuzzy_find = {
+                        layout_strategy = 'flex',
+                        show_line = false,
+                        results_title = false,
+                        preview_title = false,
+                    },
+                    buffers = {
+                        mappings = {
+                            i = {
+                                ['<c-d>'] = actions.delete_buffer + actions.move_to_top,
+                            },
+                        },
+                        ignore_current_buffer = true,
+                    },
+                    colorscheme = {
+                        enable_preview = true,
+                    },
+                },
+                extensions = {
+                    fzf = {
+                        fuzzy = true, -- false will only do exact matching
+                        override_generic_sorter = true, -- override the generic sorter
+                        override_file_sorter = true, -- override the file sorter
+                        case_mode = 'smart_case', -- or "ignore_case" or "respect_case"
+                    },
+                },
+            })
+
+            telescope.load_extension('fzf')
+            telescope.load_extension('harpoon')
+            telescope.load_extension('noice')
+
+        -- stylua: ignore
+        keymap.set("n", "<leader>fo", function() builtin.current_buffer_fuzzy_find() end, { desc = "[/] Fuzzily search in current buffer", })
+            keymap.set(
+                'n',
+                '<leader>fm',
+                function() builtin.marks({ layout_strategy = 'flex', layout_config = {} }) end,
+                { desc = 'List of marks' }
+            )
+            keymap.set(
+                'n',
+                '<leader>d',
+                function() builtin.diagnostics({ bufnr = 0, sort_by = 'severity' }) end,
+                { desc = 'Show diagnostics for current buffer' }
+            )
+            keymap.set(
+                'n',
+                '<leader>D',
+                '<cmd>Telescope diagnostics<cr>',
+                { desc = 'Show diagnostics for all open buffers' }
+            )
+        end,
+
+        -- stylua: ignore
+        keys = {
+            { "<leader>fr", "<cmd>Telescope oldfiles<cr>", desc = "Fuzzy find recent files" },
+            { "<leader>ff", "<cmd>Telescope find_files<cr>", desc = "Fuzzy find files in cwd", },
+            { "<leader>fg", "<cmd>Telescope live_grep<cr>", desc = "Find string in cwd", },
+            { "<leader>fb", "<cmd>Telescope buffers<cr>", desc = "Find buffers", },
+            { "<leader>fw", "<cmd>Telescope grep_string<cr>", desc = "Find string under cursor in cwd", },
+            { "<leader>fc", "<cmd>Telescope colorscheme<cr>", desc = "Find color scheme", },
+            { "<leader>ft", "<cmd>TodoTelescope<cr>", desc = "Find todos", },
+            { "<leader>fk", "<cmd>Telescope keymaps<cr>", desc = "Find keymaps", },
+            { "<leader>:", "<cmd>Telescope command_history<cr>", desc = "Command History", },
+        },
+    },
+    {
+        'nvim-telescope/telescope-ui-select.nvim',
+        config = function()
+            require('telescope').setup({
+                extensions = {
+                    ['ui-select'] = {
+                        require('telescope.themes').get_dropdown({}),
+                    },
+                },
+            })
+            require('telescope').load_extension('ui-select')
+        end,
+    },
+}

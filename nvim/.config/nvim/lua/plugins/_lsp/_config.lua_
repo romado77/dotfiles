@@ -1,0 +1,263 @@
+return {
+    {
+        'williamboman/mason.nvim',
+        opts = {
+            ui = {
+                icons = {
+                    package_installed = '✓',
+                    package_pending = '➜',
+                    package_uninstalled = '✗',
+                },
+            },
+        },
+    },
+    {
+        'williamboman/mason-lspconfig.nvim',
+        config = function()
+            require('mason-lspconfig').setup({
+                ensure_installed = {
+                    'lua_ls',
+                    'bashls',
+                    'gopls',
+                    'ts_ls',
+                    'basedpyright',
+                    'ruff',
+                    'eslint',
+                    'angularls',
+                },
+            })
+        end,
+    },
+    {
+        'pmizio/typescript-tools.nvim',
+        dependencies = { 'nvim-lua/plenary.nvim', 'neovim/nvim-lspconfig' },
+        opts = {},
+        config = function()
+            require('typescript-tools').setup({
+                on_attach = function(client, bufnr)
+                    client.server_capabilities.documentFormattingProvider = false
+                    client.server_capabilities.documentRangeFormattingProvider = false
+                end,
+                settings = {
+                    jsx_close_tag = {
+                        enable = true,
+                        filetypes = { 'javascriptreact', 'typescriptreact' },
+                    },
+                    tsserver_file_preferences = {
+                        includeCompletionsForModuleExports = true,
+                    },
+                    tsserver_format_options = {
+                        allowIncompleteCompletions = false,
+                        allowRenameOfImportPath = false,
+                    },
+                },
+            })
+        end,
+    },
+    {
+        'neovim/nvim-lspconfig',
+        dependencies = {
+            { 'VonHeikemen/lsp-zero.nvim', branch = 'v3.x' },
+        },
+
+        event = { 'BufReadPre', 'BufNewFile' },
+        config = function()
+            local keymap = vim.keymap
+            local lspconfig = require('lspconfig')
+            local lsp_zero = require('lsp-zero')
+            local capabilities = require('blink.cmp').get_lsp_capabilities()
+            require('neodev').setup({})
+
+            -- lspconfig.lua_ls.setup({
+            --     capabilities = capabilities,
+            --     on_attach = function(client, bufnr)
+            --         client.server_capabilities.documentFormattingProvider = false
+            --         client.server_capabilities.documentRangeFormattingProvider = false
+            --     end,
+            --     settings = {
+            --         Lua = {
+            --             diagnostics = {
+            --                 globals = { 'vim' },
+            --                 disable = { 'missing-fields' },
+            --             },
+            --             completion = {
+            --                 callSnippet = 'Replace',
+            --             },
+            --             hint = {
+            --                 enable = true,
+            --             },
+            --             format = {
+            --                 enable = false,
+            --             },
+            --         },
+            --     },
+            -- })
+
+            -- lspconfig['bashls'].setup({
+            --     capabilities = capabilities,
+            --     filetypes = { 'sh', 'bash' },
+            -- })
+            --
+            -- lspconfig['basedpyright'].setup({
+            --     capabilities = capabilities,
+            --     -- root_dir = vim.loop.cwd(),
+            --     root_dir = lspconfig.util.root_pattern('.ruff.toml', 'pyproject.toml', '.git'),
+            --     settings = {
+            --         basedpyright = {
+            --             disableOrganizeImports = true,
+            --             analysis = {
+            --                 typeCheckingMode = 'standard',
+            --                 autoImportCompletions = true,
+            --                 autoSearchPaths = true,
+            --             },
+            --         },
+            --     },
+            -- })
+
+            lspconfig.gopls.setup({
+                cmd = { 'gopls' },
+                filetypes = { 'go', 'gomod', 'gowork', 'gotmpl' },
+                root_dir = require('lspconfig/util').root_pattern('go.mod', 'go.work', '.git') or vim.loop.cwd(),
+                capabilities = capabilities,
+                settings = {
+                    gopls = {
+                        analyses = {
+                            unusedparams = true,
+                        },
+                        staticcheck = true,
+                        completeUnimported = true,
+                        usePlaceholders = true,
+                    },
+                },
+            })
+
+            -- lspconfig['ts_ls'].setup({
+            --   capabilities = capabilities,
+            --   on_attach = function(client, bufnr)
+            --     client.server_capabilities.documentFormattingProvider = false
+            --     client.server_capabilities.documentRangeFormattingProvider = false
+            --   end,
+            -- })
+            --
+            local nglsp_cmd = {
+                '/Users/rdolgush/.local/share/nvim/mason/packages/angular-language-server/node_modules/@angular/language-server/bin/ngserver',
+                '--stdio',
+                '--tsProbeLocations',
+                '/Users/rdolgush/.local/share/nvim/mason/packages/angular-language-server/node_modules/typescript/',
+                '--ngProbeLocations',
+                '/Users/rdolgush/.local/share/nvim/mason/packages/angular-language-server/node_modules/@angular/language-server',
+                '--experimental-ivy',
+            }
+            lspconfig['angularls'].setup({
+                cmd = nglsp_cmd,
+                capabilities = capabilities,
+                filetypes = { 'typescript', 'html' },
+                on_new_config = function(new_config) new_config.cmd = nglsp_cmd end,
+            })
+
+            lspconfig['eslint'].setup({
+                capabilities = capabilities,
+                settings = {
+                    validate = 'on',
+                    packageManager = 'npm',
+                },
+                root_dir = lspconfig.util.root_pattern('.eslintrc.js', '.eslintrc.json', 'package.json'),
+                filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact' },
+            })
+
+            local config = {
+                virtual_text = true,
+                signs = {
+                    -- text = {
+                    --     [vim.diagnostic.severity.ERROR] = '✘',
+                    --     [vim.diagnostic.severity.WARN] = '▲',
+                    --     [vim.diagnostic.severity.HINT] = '⚑',
+                    --     [vim.diagnostic.severity.INFO] = '»',
+                    -- },
+                    text = {
+                        [vim.diagnostic.severity.ERROR] = '󰅚 ',
+                        [vim.diagnostic.severity.WARN] = '󰀪 ',
+                        [vim.diagnostic.severity.INFO] = '󰋽 ',
+                        [vim.diagnostic.severity.HINT] = '󰌶 ',
+                    },
+                },
+                update_in_insert = false,
+                underline = true,
+                severity_sort = true,
+                float = {
+                    focusable = true,
+                    style = 'minimal',
+                    border = 'rounded',
+                    source = 'always',
+                    header = '',
+                    prefix = '',
+                    scope = 'line',
+                    close_events = {
+                        'BufLeave',
+                        'CursorMoved',
+                        'InsertEnter',
+                        'FocusLost',
+                    },
+                },
+            }
+
+            vim.diagnostic.config(config)
+
+            vim.lsp.handlers['textDocument/publishDiagnostics'] =
+                vim.lsp.with(vim.lsp.diagnostic.on_publish_diagnostics, {
+                    border = 'rounded',
+                })
+
+            vim.lsp.handlers['textDocument/hover'] = vim.lsp.with(vim.lsp.handlers.hover, {
+                border = 'rounded',
+            })
+
+            vim.lsp.handlers['textDocument/signatureHelp'] = vim.lsp.with(vim.lsp.handlers.signature_help, {
+                border = 'rounded',
+            })
+
+            -- vim.lsp.set_log_level('debug')
+            vim.lsp.set_log_level('off')
+
+            lsp_zero.on_attach(function(_, bufnr)
+                local opts = { buffer = bufnr, remap = false, silent = true }
+
+                opts.desc = 'Show LSP references'
+                keymap.set('n', 'gr', '<cmd>Telescope lsp_references<CR>', opts)
+
+                opts.desc = 'Go to declaration'
+                keymap.set('n', 'gd', vim.lsp.buf.declaration, opts)
+
+                opts.desc = 'Show LSP definitions'
+                keymap.set('n', 'gD', '<cmd>Telescope lsp_definitions<CR>', opts)
+
+                opts.desc = 'Show LSP implementations'
+                keymap.set('n', 'gi', '<cmd>Telescope lsp_implementations<CR>', opts)
+
+                opts.desc = 'Show LSP type definitions'
+                keymap.set('n', 'gt', '<cmd>Telescope lsp_type_definitions<CR>', opts)
+
+                opts.desc = 'See available code actions'
+                keymap.set({ 'n', 'v' }, '<leader>ca', vim.lsp.buf.code_action, opts)
+
+                opts.desc = 'Smart rename'
+                keymap.set('n', '<leader>rn', vim.lsp.buf.rename, opts)
+
+                opts.desc = 'Show line diagnostics'
+                keymap.set('n', '<leader>e', vim.diagnostic.open_float, opts)
+
+                opts.desc = 'Go to previous diagnostic'
+                keymap.set('n', '[d', vim.diagnostic.goto_prev, opts)
+
+                opts.desc = 'Go to next diagnostic'
+                keymap.set('n', ']d', vim.diagnostic.goto_next, opts)
+
+                opts.desc = 'Show message under cursor'
+                keymap.set('n', 'K', vim.lsp.buf.hover, opts)
+
+                opts.desc = 'Restart LSP'
+                keymap.set('n', '<leader>rs', ':LspRestart<CR>', opts)
+            end)
+        end,
+    },
+}
