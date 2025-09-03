@@ -1,29 +1,14 @@
-# Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
-if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-  source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-fi
-
-## Enable Powerlevel10k instant prompt. Should stay close to the top of ~/.zshrc.
-# Initialization code that may require console input (password prompts, [y/n]
-# confirmations, etc.) must go above this block; everything else may go below.
-# if [[ -r "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh" ]]; then
-#   source "${XDG_CACHE_HOME:-$HOME/.cache}/p10k-instant-prompt-${(%):-%n}.zsh"
-# fi
-#
 setopt noautomenu
 setopt nomenucomplete
-autoload -U compinit && compinit
 setopt extended_glob
 setopt hist_ignore_dups
 setopt hist_ignore_space
 setopt hist_verify
 setopt share_history
+
 SAVEHIST=1000
 HISTSIZE=1000
 
-fpath+=(/Users/rdolgush/.docker/completions)
 
 bindkey "^[[A" history-search-backward
 bindkey "^[[B" history-search-forward
@@ -34,15 +19,18 @@ export EDITOR='nvim'
 export ZSH="/Users/rdolgush/.oh-my-zsh"
 export OBJC_DISABLE_INITIALIZE_FORK_SAFETY=YES
 export XDG_CONFIG_HOME=$HOME/.config
-# export STARSHIP_LOG=error
-export PYTHON_VENV_NAME=".venv"
-export PYTHON_AUTO_VRUN=true
+export ZDOTDIR=$HOME/dotfiles/zsh/
+export BAT_CONFIG_PATH="$XDG_CONFIG_HOME/bat/bat.conf"
+
+
+# export PYTHON_VENV_NAME=".venv"
+# export PYTHON_AUTO_VRUN=true
 
 # Set name of the theme to load --- if set to "random", it will
 # load a random theme each time oh-my-zsh is loaded, in which case,
 # to know which specific one was loaded, run: echo $RANDOM_THEME
 # See https://github.com/ohmyzsh/ohmyzsh/wiki/Themes
-#ZSH_THEME="robbyrussell"
+# ZSH_THEME="robbyrussell"
 ZSH_THEME="powerlevel10k/powerlevel10k"
 
 # Set list of themes to pick from when loading at random
@@ -106,25 +94,20 @@ ZSH_THEME="powerlevel10k/powerlevel10k"
 # Example format: plugins=(rails git textmate ruby lighthouse)
 # Add wisely, as too many plugins slow down shell startup.
 plugins=(
-ansible
 git
-iterm2
 docker
 node
 kubectl
 kube-ps1
 brew
 macos
-yarn
 jsontools
-zsh-completions
-zsh-autosuggestions
+# direnv
 virtualenv-autodetect
-python
+# python
 vi-mode
 )
 
-source $ZSH/oh-my-zsh.sh
 
 # User configuration
 
@@ -133,12 +116,6 @@ source $ZSH/oh-my-zsh.sh
 # You may need to manually set your language environment
 # export LANG=en_US.UTF-8
 
-# Preferred editor for local and remote sessions
-# if [[ -n $SSH_CONNECTION ]]; then
-#   export EDITOR='vim'
-# else
-#   export EDITOR='mvim'
-# fi
 
 # Compilation flags
 # export ARCHFLAGS="-arch x86_64"
@@ -149,70 +126,15 @@ source $ZSH/oh-my-zsh.sh
 # For a full list of active aliases, run `alias`.
 #
 # Example aliases
-# alias zshconfig="mate ~/.zshrc"
-# alias ohmyzsh="mate ~/.oh-my-zsh"
-alias vi='nvim'
-alias vim='nvim'
-alias wireshark='open /Applications/Wireshark.app -n'
-alias dps='docker container ps'
-alias dcl='docker container ls'
-alias dcla='docker container ls -a'
-alias dcpr='docker container prune -f'
-alias dil='docker image ls'
-alias dirma='~/.dirm.sh'
-alias dci='docker container inspect'
-alias dcrm='docker container rm'
-alias dclog='docker container logs'
-alias dclogf='docker container logs -f'
-alias dipr='docker image prune -f'
-alias dipra='docker image prune -f -a'
-alias dirm='docker image rm'
-alias dcp='docker container ps'
-alias dcs='docker container stop'
-alias k='kubectl'
-alias kpods='k get pods -o wide'
-alias klogs='k logs -f'
-alias kexec='f() { k exec -it $1 -- $2; unset -f f; };f'
-alias kpodsg='k get pods -o wide | grep'
-alias kconf='k get configmap'
-alias ksec='k get secret'
-#
-alias e64='f() { echo $@ | base64; unset -f f; };f'
-alias d64='f() { echo $@ | base64 -D; unset -f f; };f'
-alias zz='find . -name "*.gz" | xargs -n 1 gzip -d'
-alias tt='find . -name "*.tar" | xargs -n 1 tar xvf'
-alias jcp='cp jtapi*.csv ~/Downloads/jtapi/.'
-alias jtapi='python ~/Dev/temp/jtapi.py'
-alias uz="~/.uz.sh"
-alias u7z="~/.u7z.sh"
-alias ur="~/.ur.sh"
-alias c='f(){ cd ~/CASES/$1; };f'
-alias d='cd ~/Downloads/'
-alias dev='cd ~/Dev/'
-alias ipcbu='python3 ~/Dev/ipcbu_upload/upload.py'
-alias jless='python3 ~/Dev/tools/jless.py'
-alias swds='lftp -p 990 -u rdolgush swds.cisco.com'
-alias fuel='/usr/local/bin/python3 /Users/rdolgush/Dev/my/fuel.py'
-alias cat='python3 ~/Dev/tools/tcat.py'
-alias rgc='rg -INa'
-alias call='find . -name "calll*" | xargs -n 1 rg -a'
-alias jh='rg -INa "http.*\*\-.*(request|response) | sort"'
-alias jx='rg "TriClient.*(Send|Recv)|CTriTPConnectionClient::OnConnectSuccess|CTriTPConnectionClient::disconnect" | sort'
-alias jsso='rgc "SsoAuthRequest|BrowserListener-Logger"'
-alias jssod='rgc "SsoAuthRequest|BrowserListener-Logger|Receive ServerTrust Challenge|UI.Lifecycle.Login.*webView.*didCommitNavigation|document len"'
-alias jsip='rgc "sipio|CurrentAppStatus|updateTelephonyMenu|getNetworkType" | sort'
-alias graph='git log --oneline --decorate --all --graph'
-#
-alias pipuninstallall="pip uninstall -y -r <(pip freeze)"
-alias deploy="~/deploy.sh"
-alias upload="/usr/local/bin/upload.sh"
-# alias ce="cd ~/Dev/callengine"
-alias cece="cd ~/Dev/callengine/callengine"
-alias ls="lsd"
-alias md2html='_md2html() { full_path=$(realpath "$1"); pandoc -f markdown "$full_path" -o "/tmp/$(basename "$full_path" .md).html" && open "/tmp/$(basename "$full_path" .md).html"; }; _md2html'
 
-source /Users/rdolgush/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
-source $HOME/.cargo/env
+fpath+=(/Users/rdolgush/.docker/completions)
+fpath+=($(brew --prefix)/share/zsh-completions)
+fpath+=(/opt/homebrew/share/zsh/site-functions)
+
+source $(brew --prefix)/share/zsh-syntax-highlighting/zsh-syntax-highlighting.zsh
+source $(brew --prefix)/share/zsh-autosuggestions/zsh-autosuggestions.zsh
+
+autoload -Uz compinit && compinit
 
 export PATH="/usr/local/opt/libarchive/bin:/Users/rdolgush/go/bin:$PATH"
 # export PYDEVD_LOAD_NATIVE_LIB=0
@@ -226,19 +148,20 @@ export PATH=$JAVA_HOME/bin:$PATH
 export PATH="/opt/homebrew/opt/openjdk/bin:$PATH"
 export PATH="/opt/homebrew/opt/openssl@3/bin:$PATH"
 
-# export STARSHIP_CONFIG=~/.config/starship/starship.toml
-export BAT_THEME=tokyonight_night
 export ITERM2_SQUELCH_MARK=1
-# export BAT_THEME="Catppuccin-mocha"
 #
-source ~/.fzf/scripts.zsh
-source ~/fzf-git.sh/fzf-git.sh
+source $ZSH/oh-my-zsh.sh
 
 eval "$(fzf --zsh)"
 eval "$(direnv hook zsh)"
-# eval "$(starship init zsh)"
 eval "$(zoxide init --cmd cd zsh)"
 eval "$(uv generate-shell-completion zsh)"
+eval "$(uvx --generate-shell-completion zsh)"
 
-# To customize prompt, run `p10k configure` or edit ~/.p10k.zsh.
-[[ ! -f ~/.p10k.zsh ]] || source ~/.p10k.zsh
+# To customize prompt, run `p10k configure` or edit ~/dotfiles/zsh//.p10k.zsh.
+[[ ! -f ~/dotfiles/zsh//.p10k.zsh ]] || source ~/dotfiles/zsh//.p10k.zsh
+
+source $HOME/scripts/scripts.zsh
+source $HOME/scripts/fzf-git.sh/fzf-git.sh
+source $HOME/.zsh_aliases
+source $HOME/.uv

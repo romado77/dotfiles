@@ -1,14 +1,26 @@
 local prompts = {
     Explain = 'Please explain how the following code works.',
     Review = 'Please review the following code and provide suggestions for improvement.',
-    Tests = 'Please explain how the selected code works, then generate unit tests for it.',
-    Refactor = 'Please refactor the following code to improve its clarity and readability.',
+    Tests = {
+        prompt = 'Please generate tests',
+        system_prompt = 'Please, generate relevant tests for given code. If it is Python, use pytest as test framework',
+    },
+    Refactor = {
+        prompt = 'Refactor code',
+        system_prompt = [[Please refactor the following code to improve its
+        clarity and readability. Don't forget about docstring and typing for
+        function parameters and return values, they are must. Docstring must be
+        in ReStructuredText format with not type hints.]],
+    },
     FixCode = 'Please fix the following code to make it work as intended.',
     FixError = 'Please explain the error in the following text and provide a solution.',
     BetterNamings = 'Please provide better names for the following variables and functions.',
-    Documentation = 'Please provide documentation for the following code.',
-    SwaggerApiDocs = 'Please provide documentation for the following API using Swagger.',
-    SwaggerJsDocs = 'Please write JSDoc for the following API using Swagger.',
+    Documentation = {
+        prompt = 'Doc',
+        system_prompt = [[Please provide documentation for the following code.
+        If it is Python code, docstring must be in ReStructuredText format with
+        no type hints.]],
+    },
     Summarize = 'Please summarize the following text.',
     Spelling = 'Please correct any grammar and spelling errors in the following text.',
     Wording = 'Please improve the grammar and wording of the following text.',
@@ -32,7 +44,7 @@ return {
             mappings = {
                 complete = {
                     detail = 'Use @<Tab> or /<Tab> for options.',
-                    insert = '<Tab>',
+                    insert = '',
                 },
                 close = {
                     normal = 'q',
@@ -58,14 +70,15 @@ return {
         },
         config = function(_, opts)
             local chat = require('CopilotChat')
+            local select = require('CopilotChat.select')
             local user = vim.env.USER or 'User'
             user = user:sub(1, 1):upper() .. user:sub(2)
             opts.question_header = '  ' .. user .. ' '
             opts.answer_header = '  Copilot '
+            opts.selection = function(source) return select.visual(source) or select.buffer(source) end
 
             chat.setup(opts)
 
-            local select = require('CopilotChat.select')
             vim.api.nvim_create_user_command(
                 'CopilotChatVisual',
                 function(args) chat.ask(args.args, { selection = select.visual }) end,
@@ -138,13 +151,13 @@ return {
             -- Chat with Copilot in visual mode
             {
                 '<leader>av',
-                ':CopilotChatVisual',
+                '<cmd>CopilotChatVisual<cr>',
                 mode = 'x',
                 desc = 'CopilotChat - Open in vertical split',
             },
             {
                 '<leader>ax',
-                ':CopilotChatInline',
+                '<cmd>CopilotChatInline<cr>',
                 mode = 'x',
                 desc = 'CopilotChat - Inline chat',
             },

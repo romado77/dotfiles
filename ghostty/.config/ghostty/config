@@ -10,8 +10,8 @@ macos-titlebar-style = transparent
 fullscreen = false
 maximize = true
 copy-on-select = clipboard
-background-opacity=0.4
-background-blur=8
+background-opacity=0.2
+background-blur=4
 
 #theme = iTerm2 Default
 background = #111111
@@ -25,4 +25,4 @@ macos-option-as-alt = right
 
 keybind = alt+left=unbind
 keybind = alt+right=unbind
-
+keybind = ctrl+b=copy_url_to_clipboard

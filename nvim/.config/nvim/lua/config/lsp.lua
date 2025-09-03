@@ -1,8 +1,13 @@
 vim.api.nvim_create_autocmd('LspAttach', {
     desc = 'LSP actions',
     callback = function(event)
-        local opts = { buffer = event.buf }
+        local client = vim.lsp.get_client_by_id(event.data.client_id)
+        local buffer = event.buf
 
+        -- if client and client:supports_method(vim.lsp.protocol.Methods.textDocument_definition, buffer) then
+        -- vim.keymap.del('n', 'gd', {buffer=buffer})
+        -- vim.keymap.del('n', 'gD', {buffer=buffer})
+        -- vim.keymap.del('n', 'gr', opts)
         -- vim.keymap.set('n', 'K', '<cmd>lua vim.lsp.buf.hover()<cr>', opts)
         -- vim.keymap.set('n', 'gd', '<cmd>lua vim.lsp.buf.definition()<cr>', opts)
         -- vim.keymap.set('n', 'gD', '<cmd>lua vim.lsp.buf.declaration()<cr>', opts)
@@ -15,6 +20,7 @@ vim.api.nvim_create_autocmd('LspAttach', {
         -- -- vim.keymap.set('n', '<leader>ca', '<cmd>lua vim.lsp.buf.code_action()<cr>', opts)
         -- -- vim.keymap.set({ 'n', 'v' }, '<leader>ca', vim.lsp.buf.code_action, { desc = 'See available code actions' })
         -- vim.keymap.set('n', '<leader>rn', vim.lsp.buf.rename, { desc = 'Smart rename' })
+        -- end
     end,
 })
 
@@ -34,5 +40,5 @@ vim.lsp.config('*', {
     root_markers = { '.git' },
 })
 
-vim.lsp.enable({ 'basedpyright', 'lua_ls', 'taplo', 'bashls', 'gopls', 'eslint', 'angularls' })
+vim.lsp.enable({ 'basedpyright', 'lua_ls', 'taplo', 'bashls', 'gopls', 'eslint', 'angularls', 'ts_ls' })
 vim.lsp.set_log_level('debug')

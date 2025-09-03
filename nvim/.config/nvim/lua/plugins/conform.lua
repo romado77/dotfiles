@@ -37,6 +37,7 @@ return {
                 bash = { 'beautysh' },
                 sh = { 'beautysh' },
                 lua = { 'stylua' },
+                xml = { 'xmlformatter' },
                 terraform = { 'hcl' },
                 javascript = { 'prettierd', 'prettier', stop_after_first = true },
                 typescript = { 'prettierd', 'prettier', stop_after_first = true },

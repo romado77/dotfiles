@@ -1,0 +1,8 @@
+git/
+undodir/
+zsh/.zcompdump*
+zsh/.uv
+zsh/.p10k.zsh
+zsh/.zsh_history
+tmux/.config/tmux/plugins/
+
