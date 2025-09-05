@@ -13,7 +13,7 @@ return {
             elseif h > max_h then
                 h = max_h
             end
-            return { winopts = { height = h, width = 0.80, row = 0.40 } }
+            return { winopts = { height = h, width = 0.80, row = 0.40 }, files = { hidden = false } }
         end)
     end,
     keys = {
